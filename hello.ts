@@ -3,21 +3,21 @@ console.log("Hello world");
 const birds : BirdEntity[] = [];
 const hunterBirds : HunterBird[] = [];
 
-const birdCount: number = 20;
-const separationRatio: number = 0.1;
-const alignment: number = 0.1;
-const cohesion: number = 0.01;
+const birdCount: number = 50;
+const separationRatio: number = 0.01;
+const alignment: number = 0.01;
+const cohesion: number = 0.001;
 const gravityStrengthMultiplier: number = 0.001;
-const birdMaxSpeed: number = 250;
+const birdMaxSpeed: number = 100;
 const gravityDistance: number = 600;
-const birdCohesionDistance: number = 400;
-const birdSeparationDistance: number = 100;
+const birdCohesionDistance: number = 300;
+const birdSeparationDistance: number = 200;
 const birdAlignmentDistance: number = 200;
 
-const hunterBirdCount: number = 2;
-const maxHunterDist : number = 50;
+const hunterBirdCount: number = 1;
+const maxHunterDist : number = 100;
 const hunterBirdMaxSpeed: number = 50;
-const hunterFearAmount: number = 10;
+const hunterFearAmount: number = 0.20;
 
 class Position {
     xPos: number = 0;
