@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            /* Keeps the square compact and visible without affecting other elements */
+            #mouseFollowSquare {
+                width: 40px;
+                height: 40px;
+                background-color: #0078d4;
+                border-radius: 4px;
+            }
+            .middleSquare {
+                position: fixed;
+                width: 32px;
+                height: 32px;
+                background-color: #ff00c8;
+                border-radius: 4px;
+                pointer-events: none;
+
+            }
+            .birdSquare {
+                position: fixed;
+                width: 32px;
+                height: 32px;
+                background-color: #ff7043;
+                border-radius: 4px;
+                pointer-events: none;
+                
+
+            }
+            .birdPointer {
+                position: fixed;
+                width: 32px;
+                height: 32px;
+                background-color: #ff7043;
+                border-radius: 4px;
+                pointer-events: none;
+            }
+                        
+            .sepVector {
+                position: fixed;
+                width: 32px;
+                height: 4px;
+                background-color: #be6565;
+                border-radius: 4px;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                transform-origin: 0 50%;
+            }            
+            .alignVector {
+                position: fixed;
+                width: 32px;
+                height: 4px;
+                background-color: #ffae00;
+                border-radius: 4px;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                transform-origin: 0 50%;
+            }
+            .consolVector {
+                position: fixed;
+                width: 32px;
+                height: 4px;
+                background-color: #71ca5b;
+                border-radius: 4px;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                transform-origin: 0 50%;
+            }
+            
+            .combineVector {
+                position: fixed;
+                width: 32px;
+                height: 4px;
+                background-color: #2b29c2;
+                border-radius: 4px;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                transform-origin: 0 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <H1 id = "Title"> 
+            This is basic Javascript Webapp.
+        </H1>
+        <H1 id = "ButtonDescription"> 
+            This is BOID implementation.
+        </H1>
+        <H1 id="mousePosDisplay"> 
+            Move the mouse to see its position.
+        </H1>
+        <button id="showTextButton">Show Text</button>
+        <div id="mouseFollowSquare"></div>
+        <script type="module" src="hello.js"></script>
+    </body>
+
+</html>
