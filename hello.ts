@@ -1,6 +1,7 @@
 console.log("Hello world");
 
 const birds : BirdEntity[] = [];
+const hunterBirds : HunterBird[] = [];
 
 const birdCount: number = 20;
 const separationRatio: number = 0.1;
@@ -9,12 +10,14 @@ const cohesion: number = 0.01;
 const gravityStrengthMultiplier: number = 0.001;
 const birdMaxSpeed: number = 250;
 const gravityDistance: number = 600;
-const birdCohesionDistance: number = 1000;
+const birdCohesionDistance: number = 400;
 const birdSeparationDistance: number = 100;
 const birdAlignmentDistance: number = 200;
 
-
-
+const hunterBirdCount: number = 2;
+const maxHunterDist : number = 50;
+const hunterBirdMaxSpeed: number = 50;
+const hunterFearAmount: number = 10;
 
 class Position {
     xPos: number = 0;
@@ -60,7 +63,6 @@ class Vector2 {
 const pivotPosition : Position = new Position(0,0);
 
 class BirdEntity {
-
     position: Position;
     birdVector: Vector2;
     birdBodyImage: HTMLDivElement;
@@ -116,8 +118,6 @@ class BirdEntity {
         // birdPointer.style.left = `${position.x.toString()}px`;
         // birdPointer.style.top = `${position.x.toString()}px`;
         // document.body.appendChild(birdPointer);
-
-        
     }
 
     addVector(delta: Vector2) {
@@ -159,10 +159,6 @@ class BirdEntity {
         this.birdBodyImage.dataset.y = this.position.y.toString();
         this.birdBodyImage.style.left = `${this.position.x.toString()}px`;
         this.birdBodyImage.style.top = `${this.position.y.toString()}px`;
-        
-
-
-        
         const x = this.position.x;
         const y = this.position.y;
 
@@ -200,6 +196,9 @@ class BirdEntity {
     }
 }
 
+class HunterBird extends BirdEntity {
+    fearLevel : Number = 10;
+}
 function initBirds(birdCount: number) {
     for (let i = 0; i < birdCount; i++) {
         const birdPos: Position = new Position(
@@ -222,17 +221,40 @@ function initBirds(birdCount: number) {
             pointer
         );
         birds.push(newBird);
-        pivotPosition.x = window.innerWidth/2;
-        pivotPosition.y = window.innerHeight/2;
-        
-        const middleSquare = document.createElement("div");
-        middleSquare.className = "middleSquare";
-        middleSquare.style.left = `${pivotPosition.x.toString()}px`;
-        
-        middleSquare.style.top = `${pivotPosition.y.toString()}px`;
-        document.body.appendChild(middleSquare);
+
     }
+    pivotPosition.x = window.innerWidth/2;
+    pivotPosition.y = window.innerHeight/2;
     
+    const middleSquare = document.createElement("div");
+    middleSquare.className = "middleSquare";
+    middleSquare.style.left = `${pivotPosition.x.toString()}px`;
+    
+    middleSquare.style.top = `${pivotPosition.y.toString()}px`;
+    document.body.appendChild(middleSquare);
+
+    for (let i = 0; i < hunterBirdCount; i++) {
+        const birdPos: Position = new Position(
+            Math.random() * window.innerWidth, 
+            Math.random() * window.innerHeight
+        );
+        const birdVector: Vector2 = new Vector2(
+            0,
+            0
+        );
+        const square = document.createElement("div");
+        square.className = "hunterBirdSquare";
+        const pointer = document.createElement("div");
+        pointer.className = "hunterBirdPointer";
+        const newHunterBird : HunterBird = new HunterBird(
+            birdPos, 
+            birdVector, 
+            square, 
+            pointer
+        );
+        hunterBirds.push(newHunterBird);
+        
+    }
 }
 
 
@@ -241,16 +263,15 @@ initBirds(birdCount);
 let previousTime = performance.now();
 
 function update(now: number) {
-    if (now - previousTime >= 50) {
+    if (now - previousTime >= 100) {
         const delta : number = (now - previousTime)/1000;
         previousTime = now;
-        recalculateAndProcessBirds(delta);
+        recalculateAndProcessBirds(delta, birds, hunterBirds);
         console.log("Bird Updating")
     }
     else {
         const delta : number = (now - previousTime)/1000;
-        processBirds(delta)
-
+        processBirds(delta, birds, hunterBirds)
     }
 
     requestAnimationFrame(update);
@@ -258,27 +279,37 @@ function update(now: number) {
 
 requestAnimationFrame(update);
 
-function recalculateAndProcessBirds(time: number) {
+function recalculateAndProcessBirds(time: number, birds: BirdEntity[], hunterBirds: HunterBird[]) {
     birds.forEach((bird : BirdEntity) => {
-        bird.birdVector.multiplyMagnitude(1); // Reset before calculating new vector
-        calculateNewBirdVector(bird, birds)
+        bird.birdVector.multiplyMagnitude(1);
+        calculateNewBirdVector(bird, birds, hunterBirds)
         bird.moveStep(time);
     }
     ) 
+    hunterBirds.forEach((hunterBird) => {
+        hunterBird.birdVector.multiplyMagnitude(1);
+        calculateHunterBirdVector(hunterBird, birds, hunterBirds)
+        hunterBird.moveStep(time);
+    })
 }
 
-function processBirds(time: number) {
+function processBirds(time: number, birds: BirdEntity[], hunterBirds: HunterBird[]) {
     birds.forEach((bird : BirdEntity) => {
         //bird.birdVector = new Vector2(0,0); // Reset before calculating new vector
         //calculateNewBirdVector(bird, birds)
         //calculateNewBirdVector(bird, birds)
-        calculateNewBirdVector(bird, birds)
+        calculateNewBirdVector(bird, birds, hunterBirds)
         bird.moveStep(time);
     }
-    ) 
+    )
+    hunterBirds.forEach((hunterBird) => {
+        hunterBird.birdVector.multiplyMagnitude(1);
+        calculateHunterBirdVector(hunterBird, birds, hunterBirds)
+        hunterBird.moveStep(time);
+    }) 
 }
 
-function calculateNewBirdVector(selectedBird: BirdEntity, otherBirds: BirdEntity[]) {
+function calculateNewBirdVector(selectedBird: BirdEntity, otherBirds: BirdEntity[], hunterBirds: HunterBird[] ) {
     const separationBirds : BirdEntity[] = [];
     const alignBirds : BirdEntity[] = [];
     const cohesionBirds : BirdEntity[] = [];
@@ -293,9 +324,9 @@ function calculateNewBirdVector(selectedBird: BirdEntity, otherBirds: BirdEntity
             {
                 if (findDistanceTwoPoint(
                     bird.position, selectedBird.position) < birdCohesionDistance) 
-                {
-                    cohesionBirds.push(bird);
-                }
+                    {
+                        cohesionBirds.push(bird);
+                    }
                 if (findDistanceTwoPoint(
                     bird.position, selectedBird.position) < birdAlignmentDistance) 
                     {
@@ -307,6 +338,7 @@ function calculateNewBirdVector(selectedBird: BirdEntity, otherBirds: BirdEntity
                     {
                         separationBirds.push(bird);
                     }
+                
             }
         }
     )
@@ -322,7 +354,62 @@ function calculateNewBirdVector(selectedBird: BirdEntity, otherBirds: BirdEntity
     console.log(`DebugCoh ${DebugCoh.x},${DebugCoh.y}`);
     selectedBird.addConsolVector(DebugCoh);
 
-    selectedBird.addPivotGravity(getPivotGravity(selectedBird, pivotPosition))
+    const birdFearVector : Vector2 = calculateBirdFear(selectedBird, hunterBirds);
+    selectedBird.addVector(birdFearVector);
+    selectedBird.addPivotGravity(getPivotGravity(selectedBird, pivotPosition));
+}
+
+function calculateHunterBirdVector(selectedHunter: HunterBird, otherBirds: BirdEntity[], hunterBirds: HunterBird[] ) {
+    const cohesionBirds : BirdEntity[] = [];
+    otherBirds.forEach((bird : BirdEntity) =>  
+        {
+
+
+            if (findDistanceTwoPoint(
+                bird.position, selectedHunter.position) < birdCohesionDistance) 
+                {
+                    cohesionBirds.push(bird);
+                }                
+        }
+    )
+    const DebugCoh = getCohesionVector(selectedHunter, cohesionBirds);
+    console.log(`HunterBird: DebugCoh ${DebugCoh.x},${DebugCoh.y}`);
+    selectedHunter.addConsolVector(DebugCoh);
+
+    const birdFearVector : Vector2 = calculateBirdFear(selectedHunter, hunterBirds);
+    selectedHunter.addVector(birdFearVector);
+    selectedHunter.addPivotGravity(getPivotGravity(selectedHunter, pivotPosition));
+}
+
+
+function calculateBirdFear(bird :BirdEntity, hunterBirds : HunterBird[]) : Vector2
+{
+    let returnVector : Vector2 = new Vector2(0,0);
+    let cloestHunter : HunterBird;
+    let prevDist : number = 100000000;
+    hunterBirds.forEach((hunter) => 
+        {
+            if (hunter === bird) {
+                return;
+            }
+            if (findDistanceTwoPoint(hunter.position, bird.position) < prevDist) 
+                {
+                prevDist = findDistanceTwoPoint(hunter.position, bird.position);
+                cloestHunter = hunter;
+                if (prevDist < maxHunterDist) 
+                    {
+                    const fearMultiplier = maxHunterDist / findDistanceTwoPoint(hunter.position, bird.position); 
+                    returnVector = new Vector2(-(hunter.position.x - bird.position.x), -(hunter.position.y - bird.position.y));
+                    returnVector.multiplyMagnitude(fearMultiplier);
+                }
+
+            }
+
+        }
+    )
+
+    return returnVector;
+
 }
 
 function findDistanceTwoPoint(positionOne: Position, positionTwo: Position): number {
