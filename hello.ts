@@ -3,21 +3,68 @@ console.log("Hello world");
 const birds : BirdEntity[] = [];
 const hunterBirds : HunterBird[] = [];
 
-const birdCount: number = 50;
-const separationRatio: number = 0.01;
-const alignment: number = 0.01;
-const cohesion: number = 0.001;
-const gravityStrengthMultiplier: number = 0.001;
-const birdMaxSpeed: number = 100;
-const gravityDistance: number = 600;
-const birdCohesionDistance: number = 300;
-const birdSeparationDistance: number = 200;
-const birdAlignmentDistance: number = 200;
+let  birdCount: number = 50;
+let  separationRatio: number = 0.01;
+let  alignment: number = 0.01;
+let  cohesion: number = 0.001;
+let  gravityStrengthMultiplier: number = 0.001;
+let  birdMaxSpeed: number = 100;
+let  gravityDistance: number = 600;
+let  birdCohesionDistance: number = 300;
+let  birdSeparationDistance: number = 200;
+let  birdAlignmentDistance: number = 200;
 
-const hunterBirdCount: number = 1;
-const maxHunterDist : number = 100;
-const hunterBirdMaxSpeed: number = 50;
-const hunterFearAmount: number = 0.20;
+let  hunterBirdCount: number = 2; 
+let  maxHunterDist : number = 200; 
+let  hunterBirdMaxSpeed: number = 10;
+let  hunterFearAmount: number = 0.2;
+
+function setupSliderWithBinding(
+    inputId: string,
+    spanId: string,
+    initialValue: number,
+    onChange: (value: number) => void
+): void {
+    const sliderElement: HTMLInputElement = document.getElementById(inputId) as HTMLInputElement;
+    const textElement: HTMLSpanElement = document.getElementById(spanId) as HTMLSpanElement;
+
+    sliderElement.value = initialValue.toString();
+    textElement.textContent = initialValue.toString();
+    onChange(initialValue);
+
+    sliderElement.addEventListener("input", function (event: Event): void {
+        const targetElement: HTMLInputElement = event.target as HTMLInputElement;
+        const numericValue: number = Number(targetElement.value);
+
+        textElement.textContent = numericValue.toString();
+        onChange(numericValue);
+    });
+}
+
+// setupSliderWithBinding("birdCount", "birdCountText", birdCount, (value: number): void => { birdCount = value; });
+
+setupSliderWithBinding("birdMaxSpeed", "birdMaxSpeedText", birdMaxSpeed, function (value: number): void {
+    birdMaxSpeed = value;
+});
+
+
+setupSliderWithBinding("birdSeparationDistance", "birdSeparationDistanceText", birdSeparationDistance, function (value: number): void {
+    birdSeparationDistance = value;
+});
+setupSliderWithBinding("birdAlignmentDistance", "birdAlignmentDistanceText", birdAlignmentDistance, function (value: number): void {
+    birdAlignmentDistance = value;
+});
+setupSliderWithBinding("birdCohesionDistance", "birdCohesionDistanceText", birdCohesionDistance, function (value: number): void { birdCohesionDistance = value;});
+
+
+// setupSliderWithBinding("hunterBirdCount", "hunterBirdCountText", hunterBirdCount, function (value: number): void { hunterBirdCount = value;});
+
+
+
+
+
+
+
 
 class Position {
     xPos: number = 0;
@@ -401,6 +448,7 @@ function calculateBirdFear(bird :BirdEntity, hunterBirds : HunterBird[]) : Vecto
                     const fearMultiplier = maxHunterDist / findDistanceTwoPoint(hunter.position, bird.position); 
                     returnVector = new Vector2(-(hunter.position.x - bird.position.x), -(hunter.position.y - bird.position.y));
                     returnVector.multiplyMagnitude(fearMultiplier);
+                    returnVector.multiplyMagnitude(hunterFearAmount);
                 }
 
             }
