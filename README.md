@@ -1,10 +1,10 @@
-#Typescript Boids Implementation
+# Typescript Boids Implementation
 <https://johnkim9887.github.io/typescript_boid/>
 The live version is available here!
 
 
 
-#Typescript Boids Implementation
+# Typescript Boids Implementation
 Boids is a swarm simulation that simulates the behaviour of birds flocking. 
 Each 'Boid' follows simple rule.
 1. Separation
